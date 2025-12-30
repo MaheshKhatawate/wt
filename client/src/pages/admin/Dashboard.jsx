@@ -1,11 +1,9 @@
-import React from 'react'
-import useScrollToTop from '../../hooks/useScrollToTop'
-
-const Dashboard = () => {
-  useScrollToTop();
+function Dashboard() {
   return (
-    <div>This is admin Dashboard</div>
-  )
+    <div>
+      <h1>Dashboard</h1>
+    </div>
+  );
 }
 
-export default Dashboard
+export default Dashboard;
