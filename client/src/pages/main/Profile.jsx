@@ -1,43 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getProfile, updateProfile, changePassword } from '../../store/profile';
-import { getReminders, createReminder, updateReminder, deleteReminder, sendTestReminder } from '../../store/reminder';
-import useScrollToTop from '../../hooks/useScrollToTop';
-import { toast } from 'sonner';
-import { User, Mail, Phone, Calendar, Users, Lock, Edit2, Save, X, Bell, Target, Clock, Trash2, Send } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile, updateProfile, changePassword } from "../../store/profile";
+import {
+  getReminders,
+  createReminder,
+  updateReminder,
+  deleteReminder,
+  sendTestReminder,
+} from "../../store/reminder";
+import useScrollToTop from "../../hooks/useScrollToTop";
+import { toast } from "sonner";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Users,
+  Lock,
+  Edit2,
+  Save,
+  X,
+  Bell,
+  Target,
+  Clock,
+  Trash2,
+  Send,
+} from "lucide-react";
 
 const Profile = () => {
   useScrollToTop();
   const dispatch = useDispatch();
   const { profile, isLoading } = useSelector((state) => state.profile);
-  const { reminders, isLoading: remindersLoading } = useSelector((state) => state.reminder);
+  const { reminders, isLoading: remindersLoading } = useSelector(
+    (state) => state.reminder
+  );
   const { user } = useSelector((state) => state.auth);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [editingReminder, setEditingReminder] = useState(null);
-  
+
   const [formData, setFormData] = useState({
-    patientName: '',
-    email: '',
-    age: '',
-    gender: '',
-    phone: '',
+    patientName: "",
+    email: "",
+    age: "",
+    gender: "",
+    phone: "",
   });
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const [reminderData, setReminderData] = useState({
-    exerciseGoal: '',
-    targetDate: '',
-    frequency: 'daily',
-    reminderTime: '09:00',
-    notes: ''
+    exerciseGoal: "",
+    targetDate: "",
+    frequency: "daily",
+    reminderTime: "09:00",
+    notes: "",
   });
 
   useEffect(() => {
@@ -48,11 +71,11 @@ const Profile = () => {
   useEffect(() => {
     if (profile) {
       setFormData({
-        patientName: profile.patientName || '',
-        email: profile.email || '',
-        age: profile.age || '',
-        gender: profile.gender || '',
-        phone: profile.phone || '',
+        patientName: profile.patientName || "",
+        email: profile.email || "",
+        age: profile.age || "",
+        gender: profile.gender || "",
+        phone: profile.phone || "",
       });
     }
   }, [profile]);
@@ -77,11 +100,11 @@ const Profile = () => {
     if (isEditing) {
       // Reset form data if cancelling
       setFormData({
-        patientName: profile.patientName || '',
-        email: profile.email || '',
-        age: profile.age || '',
-        gender: profile.gender || '',
-        phone: profile.phone || '',
+        patientName: profile.patientName || "",
+        email: profile.email || "",
+        age: profile.age || "",
+        gender: profile.gender || "",
+        phone: profile.phone || "",
       });
     }
     setIsEditing(!isEditing);
@@ -89,58 +112,70 @@ const Profile = () => {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    
-    if (!formData.patientName || !formData.email || !formData.age || !formData.gender || !formData.phone) {
-      toast.error('All fields are required');
+
+    if (
+      !formData.patientName ||
+      !formData.email ||
+      !formData.age ||
+      !formData.gender ||
+      !formData.phone
+    ) {
+      toast.error("All fields are required");
       return;
     }
 
     try {
       const result = await dispatch(updateProfile(formData)).unwrap();
       if (result.success) {
-        toast.success('Profile updated successfully');
+        toast.success("Profile updated successfully");
         setIsEditing(false);
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error.message || "Failed to update profile");
     }
   };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
-    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
-      toast.error('All password fields are required');
+    if (
+      !passwordData.currentPassword ||
+      !passwordData.newPassword ||
+      !passwordData.confirmPassword
+    ) {
+      toast.error("All password fields are required");
       return;
     }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error("New passwords do not match");
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
+      toast.error("New password must be at least 6 characters");
       return;
     }
 
     try {
-      const result = await dispatch(changePassword({
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      })).unwrap();
-      
+      const result = await dispatch(
+        changePassword({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        })
+      ).unwrap();
+
       if (result.success) {
-        toast.success('Password changed successfully');
+        toast.success("Password changed successfully");
         setPasswordData({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: '',
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
         });
         setIsChangingPassword(false);
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to change password');
+      toast.error(error.message || "Failed to change password");
     }
   };
 
@@ -155,71 +190,83 @@ const Profile = () => {
   const handleCreateReminder = async (e) => {
     e.preventDefault();
 
-    if (!reminderData.exerciseGoal || !reminderData.targetDate || !reminderData.reminderTime) {
-      toast.error('Please fill all required fields');
+    if (
+      !reminderData.exerciseGoal ||
+      !reminderData.targetDate ||
+      !reminderData.reminderTime
+    ) {
+      toast.error("Please fill all required fields");
       return;
     }
 
     try {
       const result = await dispatch(createReminder(reminderData)).unwrap();
       if (result.success) {
-        toast.success('Reminder created successfully! Check your email for confirmation.');
+        toast.success(
+          "Reminder created successfully! Check your email for confirmation."
+        );
         setReminderData({
-          exerciseGoal: '',
-          targetDate: '',
-          frequency: 'daily',
-          reminderTime: '09:00',
-          notes: ''
+          exerciseGoal: "",
+          targetDate: "",
+          frequency: "daily",
+          reminderTime: "09:00",
+          notes: "",
         });
         setShowReminderForm(false);
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to create reminder');
+      toast.error(error.message || "Failed to create reminder");
     }
   };
 
   const handleUpdateReminder = async (e) => {
     e.preventDefault();
 
-    if (!reminderData.exerciseGoal || !reminderData.targetDate || !reminderData.reminderTime) {
-      toast.error('Please fill all required fields');
+    if (
+      !reminderData.exerciseGoal ||
+      !reminderData.targetDate ||
+      !reminderData.reminderTime
+    ) {
+      toast.error("Please fill all required fields");
       return;
     }
 
     try {
-      const result = await dispatch(updateReminder({ 
-        id: editingReminder._id, 
-        data: reminderData 
-      })).unwrap();
+      const result = await dispatch(
+        updateReminder({
+          id: editingReminder._id,
+          data: reminderData,
+        })
+      ).unwrap();
       if (result.success) {
-        toast.success('Reminder updated successfully!');
+        toast.success("Reminder updated successfully!");
         setReminderData({
-          exerciseGoal: '',
-          targetDate: '',
-          frequency: 'daily',
-          reminderTime: '09:00',
-          notes: ''
+          exerciseGoal: "",
+          targetDate: "",
+          frequency: "daily",
+          reminderTime: "09:00",
+          notes: "",
         });
         setEditingReminder(null);
         setShowReminderForm(false);
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to update reminder');
+      toast.error(error.message || "Failed to update reminder");
     }
   };
 
   const handleDeleteReminder = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this reminder?')) {
+    if (!window.confirm("Are you sure you want to delete this reminder?")) {
       return;
     }
 
     try {
       const result = await dispatch(deleteReminder(id)).unwrap();
       if (result.success) {
-        toast.success('Reminder deleted successfully');
+        toast.success("Reminder deleted successfully");
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to delete reminder');
+      toast.error(error.message || "Failed to delete reminder");
     }
   };
 
@@ -227,10 +274,10 @@ const Profile = () => {
     try {
       const result = await dispatch(sendTestReminder(id)).unwrap();
       if (result.success) {
-        toast.success('Test email sent! Check your inbox.');
+        toast.success("Test email sent! Check your inbox.");
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to send test email');
+      toast.error(error.message || "Failed to send test email");
     }
   };
 
@@ -238,10 +285,10 @@ const Profile = () => {
     setEditingReminder(reminder);
     setReminderData({
       exerciseGoal: reminder.exerciseGoal,
-      targetDate: new Date(reminder.targetDate).toISOString().split('T')[0],
+      targetDate: new Date(reminder.targetDate).toISOString().split("T")[0],
       frequency: reminder.frequency,
       reminderTime: reminder.reminderTime,
-      notes: reminder.notes || ''
+      notes: reminder.notes || "",
     });
     setShowReminderForm(true);
   };
@@ -250,25 +297,29 @@ const Profile = () => {
     setShowReminderForm(false);
     setEditingReminder(null);
     setReminderData({
-      exerciseGoal: '',
-      targetDate: '',
-      frequency: 'daily',
-      reminderTime: '09:00',
-      notes: ''
+      exerciseGoal: "",
+      targetDate: "",
+      frequency: "daily",
+      reminderTime: "09:00",
+      notes: "",
     });
   };
 
   const handleToggleActive = async (reminder) => {
     try {
-      const result = await dispatch(updateReminder({
-        id: reminder._id,
-        data: { isActive: !reminder.isActive }
-      })).unwrap();
+      const result = await dispatch(
+        updateReminder({
+          id: reminder._id,
+          data: { isActive: !reminder.isActive },
+        })
+      ).unwrap();
       if (result.success) {
-        toast.success(`Reminder ${!reminder.isActive ? 'activated' : 'deactivated'}`);
+        toast.success(
+          `Reminder ${!reminder.isActive ? "activated" : "deactivated"}`
+        );
       }
     } catch (error) {
-      toast.error('Failed to update reminder status');
+      toast.error("Failed to update reminder status");
     }
   };
 
@@ -287,24 +338,33 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">My Profile</h1>
-          <p className="text-gray-600 mt-2">Manage your personal information and settings</p>
+        <div className="mb-8 animate-fade-in-up">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center animate-float">
+              <span className="text-2xl">👤</span>
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
+              <p className="text-gray-600 mt-1">
+                Manage your personal information and settings
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6 animate-slide-in-left hover-glow-teal">
           {/* Profile Header */}
-          <div className="bg-linear-to-r from-blue-600 to-blue-700 p-8 text-white">
+          <div className="gradient-secondary p-8 text-white">
             <div className="flex items-center gap-6">
               <div className="h-24 w-24 rounded-full bg-white/20 flex items-center justify-center text-4xl font-bold">
-                {profile?.patientName?.charAt(0).toUpperCase() || 'U'}
+                {profile?.patientName?.charAt(0).toUpperCase() || "U"}
               </div>
               <div>
                 <h2 className="text-3xl font-bold">{profile?.patientName}</h2>
-                <p className="text-blue-100 mt-1">{profile?.email}</p>
+                <p className="text-teal-100 mt-1">{profile?.email}</p>
                 <span className="inline-block bg-white/20 px-3 py-1 rounded-full text-sm mt-2">
-                  {profile?.role === 'admin' ? 'Administrator' : 'Patient'}
+                  {profile?.role === "admin" ? "Administrator" : "Patient"}
                 </span>
               </div>
             </div>
@@ -313,12 +373,14 @@ const Profile = () => {
           {/* Profile Form */}
           <form onSubmit={handleUpdateProfile} className="p-8">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
+              <h3 className="text-xl font-semibold text-gray-800">
+                Personal Information
+              </h3>
               {!isEditing ? (
                 <button
                   type="button"
                   onClick={handleEditToggle}
-                  className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-lg hover:from-teal-600 hover:to-emerald-700 transition-all shadow-sm hover:shadow-md"
                 >
                   <Edit2 size={18} />
                   Edit Profile
@@ -358,7 +420,7 @@ const Profile = () => {
                   value={formData.patientName}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-600"
+                  className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-600 transition-all duration-200"
                 />
               </div>
 
@@ -374,7 +436,7 @@ const Profile = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-600"
+                  className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-600 transition-all duration-200"
                 />
               </div>
 
@@ -390,7 +452,7 @@ const Profile = () => {
                   value={formData.age}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-600"
+                  className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-600 transition-all duration-200"
                 />
               </div>
 
@@ -405,7 +467,7 @@ const Profile = () => {
                   value={formData.gender}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-600"
+                  className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-600 transition-all duration-200"
                 >
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
@@ -426,7 +488,7 @@ const Profile = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-600"
+                  className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-600 transition-all duration-200"
                 />
               </div>
             </div>
@@ -434,20 +496,22 @@ const Profile = () => {
         </div>
 
         {/* Change Password Section */}
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="bg-white rounded-lg shadow-md p-8 animate-slide-in-right animation-delay-200 hover-glow-teal">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                 <Lock size={20} />
                 Change Password
               </h3>
-              <p className="text-gray-600 text-sm mt-1">Update your password to keep your account secure</p>
+              <p className="text-gray-600 text-sm mt-1">
+                Update your password to keep your account secure
+              </p>
             </div>
             {!isChangingPassword && (
               <button
                 type="button"
                 onClick={() => setIsChangingPassword(true)}
-                className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 cursor-pointer bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-lg hover:from-teal-600 hover:to-emerald-700 transition-all shadow-sm hover:shadow-md"
               >
                 Change Password
               </button>
@@ -511,9 +575,9 @@ const Profile = () => {
                   onClick={() => {
                     setIsChangingPassword(false);
                     setPasswordData({
-                      currentPassword: '',
-                      newPassword: '',
-                      confirmPassword: '',
+                      currentPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
                     });
                   }}
                   className="px-6 py-2 cursor-pointer bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
@@ -533,7 +597,9 @@ const Profile = () => {
                 <Bell size={20} />
                 Exercise Reminders
               </h3>
-              <p className="text-gray-600 text-sm mt-1">Set goals and receive email reminders for your exercises</p>
+              <p className="text-gray-600 text-sm mt-1">
+                Set goals and receive email reminders for your exercises
+              </p>
             </div>
             {!showReminderForm && (
               <button
@@ -549,11 +615,16 @@ const Profile = () => {
 
           {/* Reminder Form */}
           {showReminderForm && (
-            <form onSubmit={editingReminder ? handleUpdateReminder : handleCreateReminder} className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <form
+              onSubmit={
+                editingReminder ? handleUpdateReminder : handleCreateReminder
+              }
+              className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200"
+            >
               <h4 className="text-lg font-semibold text-gray-800 mb-4">
-                {editingReminder ? 'Edit Reminder' : 'Create New Reminder'}
+                {editingReminder ? "Edit Reminder" : "Create New Reminder"}
               </h4>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -581,7 +652,7 @@ const Profile = () => {
                       value={reminderData.targetDate}
                       onChange={handleReminderChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      min={new Date().toISOString().split('T')[0]}
+                      min={new Date().toISOString().split("T")[0]}
                       required
                     />
                   </div>
@@ -638,7 +709,7 @@ const Profile = () => {
                     disabled={remindersLoading}
                     className="px-6 py-2 cursor-pointer bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400"
                   >
-                    {editingReminder ? 'Update Reminder' : 'Create Reminder'}
+                    {editingReminder ? "Update Reminder" : "Create Reminder"}
                   </button>
                   <button
                     type="button"
@@ -669,42 +740,58 @@ const Profile = () => {
                 <div
                   key={reminder._id}
                   className={`p-4 rounded-lg border-2 ${
-                    reminder.isActive 
-                      ? 'bg-white border-blue-200' 
-                      : 'bg-gray-50 border-gray-300 opacity-60'
+                    reminder.isActive
+                      ? "bg-white border-blue-200"
+                      : "bg-gray-50 border-gray-300 opacity-60"
                   }`}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Target size={18} className="text-blue-600" />
-                        <h4 className="font-semibold text-gray-800">{reminder.exerciseGoal}</h4>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          reminder.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'
-                        }`}>
-                          {reminder.isActive ? 'Active' : 'Inactive'}
+                        <h4 className="font-semibold text-gray-800">
+                          {reminder.exerciseGoal}
+                        </h4>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            reminder.isActive
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-200 text-gray-600"
+                          }`}
+                        >
+                          {reminder.isActive ? "Active" : "Inactive"}
                         </span>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Calendar size={14} />
-                          <span>Target: {new Date(reminder.targetDate).toLocaleDateString()}</span>
+                          <span>
+                            Target:{" "}
+                            {new Date(reminder.targetDate).toLocaleDateString()}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Clock size={14} />
-                          <span>{reminder.reminderTime} • {reminder.frequency}</span>
+                          <span>
+                            {reminder.reminderTime} • {reminder.frequency}
+                          </span>
                         </div>
                         {reminder.lastSent && (
                           <div className="flex items-center gap-2">
                             <Send size={14} />
-                            <span>Last: {new Date(reminder.lastSent).toLocaleDateString()}</span>
+                            <span>
+                              Last:{" "}
+                              {new Date(reminder.lastSent).toLocaleDateString()}
+                            </span>
                           </div>
                         )}
                       </div>
-                      
+
                       {reminder.notes && (
-                        <p className="mt-2 text-sm text-gray-600 italic">{reminder.notes}</p>
+                        <p className="mt-2 text-sm text-gray-600 italic">
+                          {reminder.notes}
+                        </p>
                       )}
                     </div>
 
@@ -712,11 +799,11 @@ const Profile = () => {
                       <button
                         onClick={() => handleToggleActive(reminder)}
                         className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                          reminder.isActive 
-                            ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' 
-                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                          reminder.isActive
+                            ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                            : "bg-green-100 text-green-700 hover:bg-green-200"
                         }`}
-                        title={reminder.isActive ? 'Deactivate' : 'Activate'}
+                        title={reminder.isActive ? "Deactivate" : "Activate"}
                       >
                         <Bell size={16} />
                       </button>
